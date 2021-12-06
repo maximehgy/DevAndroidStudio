@@ -7,9 +7,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hema.todo.databinding.FragmentTaskListBinding
 import com.hema.todo.form.FormActivity
+import com.hema.todo.network.Api
+import com.hema.todo.network.TasksRepository
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.launch
 import java.util.*
 
 interface TaskListListener {
@@ -19,36 +26,40 @@ interface TaskListListener {
 class TaskListFragment : Fragment() {
 
     val adapterListener = TaskListListener1()
+    private val tasksRepository = TasksRepository()
 
     inner class TaskListListener1 : TaskListListener {
         override fun onClickDelete(task: Task) {
-            taskList.remove(task);
-            myAdapter.submitList(taskList.toList())
+            lifecycleScope.launch {
+                tasksRepository.delete(task)
+                tasksRepository.refresh()
+
+            }
         }
         fun onClickEdit(task : Task){
             val intent = Intent(activity, FormActivity::class.java)
             intent.putExtra("edittask", task)
-            formLauncher.launch(intent)
+            formLauncherEdit.launch(intent)
         }
     }
 
     val myAdapter = TaskListAdapter(adapterListener)
 
-    private var taskList = mutableListOf(
-        Task(id = "id_1", title = "Task 1", description = "description 1"),
-        Task(id = "id_2", title = "Task 2"),
-        Task(id = "id_3", title = "Task 3")
-    )
 
     //val myAdapter = TaskListAdapter()
-    val formLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+    val formLauncherEdit = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task ?: return@registerForActivityResult
-        val oldTask = taskList.firstOrNull { it.id == task.id }
-        if (oldTask != null) {
-            taskList = (taskList - oldTask) as MutableList<Task>
+        lifecycleScope.launch {
+            tasksRepository.updateTask(task)
+            tasksRepository.refresh()
         }
-        taskList.add(task)
-        myAdapter.submitList(taskList.toList())
+    }
+    val formLauncherCreate = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+        val task = result.data?.getSerializableExtra("task") as? Task ?: return@registerForActivityResult
+        lifecycleScope.launch {
+            tasksRepository.create(task)
+            tasksRepository.refresh()
+        }
     }
 
 
@@ -73,9 +84,22 @@ class TaskListFragment : Fragment() {
         recyclerView.adapter = myAdapter
         binding.floatingActionButton2.setOnClickListener{
             val intent = Intent(activity, FormActivity::class.java)
-            formLauncher.launch(intent)
+            formLauncherCreate.launch(intent)
         }
+        lifecycleScope.launch{
+            tasksRepository.taskList.collect{ newList ->
+                myAdapter.submitList(newList)
+            }
+        }
+    }
 
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            tasksRepository.refresh()
+            val userInfo = Api.userWebService.getInfo().body()!!
+            binding.UserInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+        }
     }
 
     override fun onDestroyView() {
