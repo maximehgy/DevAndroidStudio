@@ -7,15 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.hema.todo.databinding.FragmentTaskListBinding
 import com.hema.todo.form.FormActivity
 import com.hema.todo.network.Api
-import com.hema.todo.network.TasksRepository
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.toList
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.util.*
 
@@ -26,13 +25,13 @@ interface TaskListListener {
 class TaskListFragment : Fragment() {
 
     val adapterListener = TaskListListener1()
-    private val tasksRepository = TasksRepository()
+    //private val tasksRepository = TasksRepository()
 
     inner class TaskListListener1 : TaskListListener {
         override fun onClickDelete(task: Task) {
             lifecycleScope.launch {
-                tasksRepository.delete(task)
-                tasksRepository.refresh()
+                viewModel.delete(task)
+                viewModel.refresh()
 
             }
         }
@@ -44,21 +43,20 @@ class TaskListFragment : Fragment() {
     }
 
     val myAdapter = TaskListAdapter(adapterListener)
+    private val viewModel: TaskListViewModel by viewModels()
 
-
-    //val myAdapter = TaskListAdapter()
     val formLauncherEdit = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task ?: return@registerForActivityResult
         lifecycleScope.launch {
-            tasksRepository.updateTask(task)
-            tasksRepository.refresh()
+            viewModel.edit(task)
+            viewModel.refresh()
         }
     }
     val formLauncherCreate = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task ?: return@registerForActivityResult
         lifecycleScope.launch {
-            tasksRepository.create(task)
-            tasksRepository.refresh()
+            viewModel.add(task)
+            viewModel.refresh()
         }
     }
 
@@ -87,16 +85,16 @@ class TaskListFragment : Fragment() {
             formLauncherCreate.launch(intent)
         }
         lifecycleScope.launch{
-            tasksRepository.taskList.collect{ newList ->
+            viewModel.taskList.collectLatest{ newList ->
                 myAdapter.submitList(newList)
-            }
+        }
         }
     }
 
     override fun onResume() {
         super.onResume()
         lifecycleScope.launch {
-            tasksRepository.refresh()
+            viewModel.refresh()
             val userInfo = Api.userWebService.getInfo().body()!!
             binding.UserInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
         }
