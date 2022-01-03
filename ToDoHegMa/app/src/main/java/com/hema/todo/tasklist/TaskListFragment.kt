@@ -8,11 +8,17 @@ import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
+import coil.transform.CircleCropTransformation
+import com.hema.todo.R
 import com.hema.todo.databinding.FragmentTaskListBinding
 import com.hema.todo.form.FormActivity
 import com.hema.todo.network.Api
+import com.hema.todo.user.UserInfoActivity
+import com.hema.todo.user.UserInfoViewModel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -44,6 +50,7 @@ class TaskListFragment : Fragment() {
 
     val myAdapter = TaskListAdapter(adapterListener)
     private val viewModel: TaskListViewModel by viewModels()
+    private val UserInfoViewModel : UserInfoViewModel by viewModels()
 
     val formLauncherEdit = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
         val task = result.data?.getSerializableExtra("task") as? Task ?: return@registerForActivityResult
@@ -59,6 +66,8 @@ class TaskListFragment : Fragment() {
             viewModel.refresh()
         }
     }
+
+    val UserInfoLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {}
 
 
 
@@ -95,8 +104,23 @@ class TaskListFragment : Fragment() {
         super.onResume()
         lifecycleScope.launch {
             viewModel.refresh()
-            val userInfo = Api.userWebService.getInfo().body()!!
-            binding.UserInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+            UserInfoViewModel.refresh()
+            lifecycleScope.launch {
+                val userInfo = UserInfoViewModel.userInfo.collect { userInfo ->
+                    if (userInfo != null) {
+                        if (userInfo.avatar != null) {
+                            binding.AvatarImage.load(userInfo.avatar){
+                                transformations(CircleCropTransformation())
+                            }
+                        } else error(R.drawable.ic_launcher_background)
+                        binding.UserInfoTextView.text = "${userInfo.firstName} ${userInfo.lastName}"
+                    }
+                }
+            }
+            binding.AvatarImage.setOnClickListener{
+                val intent = Intent(activity, UserInfoActivity::class.java)
+                UserInfoLauncher.launch(intent)
+            }
         }
     }
 
