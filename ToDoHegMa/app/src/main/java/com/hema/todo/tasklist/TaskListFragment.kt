@@ -121,6 +121,9 @@ class TaskListFragment : Fragment() {
                 val intent = Intent(activity, UserInfoActivity::class.java)
                 UserInfoLauncher.launch(intent)
             }
+            binding.UserInfoTextView.setOnClickListener{
+
+            }
         }
     }
 

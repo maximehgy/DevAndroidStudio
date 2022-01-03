@@ -1,5 +1,7 @@
 package com.hema.todo.network
 
+import com.hema.todo.user.LoginForm
+import com.hema.todo.user.LoginResponse
 import com.hema.todo.user.UserInfo
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -14,4 +16,6 @@ interface UserWebService {
     suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<UserInfo>
     @PATCH("users")
     suspend fun update(@Body user: UserInfo): Response<UserInfo>
+    @POST("users/login")
+    suspend fun login(@Body user: LoginForm): Response<LoginResponse>
 }

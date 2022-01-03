@@ -15,6 +15,7 @@ class UserInfoViewModel : ViewModel(){
 
     private val _userInfo = MutableStateFlow<UserInfo?>(null)
     public val userInfo: StateFlow<UserInfo?> = _userInfo.asStateFlow()
+    var loginResponse : LoginResponse? = null
 
     fun refresh() {
         viewModelScope.launch {
@@ -37,6 +38,15 @@ class UserInfoViewModel : ViewModel(){
             val UserResult = repository.updateUser(user)
             if (UserResult!=null){
                 _userInfo.value = UserResult
+            }
+        }
+    }
+
+    fun login(user : LoginForm){
+        viewModelScope.launch{
+            val loginResult = repository.login(user)
+            if (loginResult != null){
+                loginResponse = loginResult
             }
         }
     }

@@ -21,4 +21,9 @@ class UserInfoRepository {
         val updateUserResponse = UserWebService.update(user)
         return if (updateUserResponse.isSuccessful) updateUserResponse.body() else null
     }
+
+    suspend fun login(user: LoginForm) : LoginResponse ?{
+        val loginResponse = UserWebService.login(user)
+        return if(loginResponse.isSuccessful) loginResponse.body() else null
+    }
 }

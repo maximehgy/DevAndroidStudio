@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nav_graph.xml"
+    app:startDestination="@id/authentificationFragment">
+    <fragment
+        android:id="@+id/authentificationFragment"
+        android:name="com.hema.todo.user.AuthentificationFragment"
+        android:label="AuthentificationFragment" >
+        <action
+            android:id="@+id/action_authentificationFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+        <action
+            android:id="@+id/action_authentificationFragment_to_signUpFragment"
+            app:destination="@id/signUpFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/loginFragment"
+        android:name="com.hema.todo.user.LoginFragment"
+        android:label="LoginFragment" >
+        <action
+            android:id="@+id/action_loginFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.hema.todo.user.SignUpFragment"
+        android:label="SignUpFragment" />
+    <fragment
+        android:id="@+id/taskListFragment"
+        android:name="com.hema.todo.tasklist.TaskListFragment"
+        android:label="TaskListFragment" />
+</navigation>
