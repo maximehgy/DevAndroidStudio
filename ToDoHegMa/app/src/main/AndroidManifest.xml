@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,10 +21,10 @@
             android:name=".form.FormActivity"
             android:exported="false" />
         <activity
-            android:name= ".MainActivity"
+            android:name= ".user.AuthentificationActivity"
             android:exported="false" />
         <activity
-            android:name=".user.AuthentificationActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

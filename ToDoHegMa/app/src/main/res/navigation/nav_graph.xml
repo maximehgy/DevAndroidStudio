@@ -1,18 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph.xml"
-    app:startDestination="@id/authentificationFragment">
+    app:startDestination="@id/taskListFragment">
     <fragment
         android:id="@+id/authentificationFragment"
         android:name="com.hema.todo.user.AuthentificationFragment"
-        android:label="AuthentificationFragment" >
-        <action
-            android:id="@+id/action_authentificationFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
+        android:label="AuthentificationFragment">
         <action
             android:id="@+id/action_authentificationFragment_to_signUpFragment"
             app:destination="@id/signUpFragment" />
+        <action
+            android:id="@+id/action_authentificationFragment_to_loginFragment"
+            app:destination="@id/loginFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/signUpFragment"
+        android:name="com.hema.todo.user.SignUpFragment"
+        android:label="SignUpFragment" >
+        <action
+            android:id="@+id/action_signUpFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/taskListFragment"
+        android:name="com.hema.todo.tasklist.TaskListFragment"
+        android:label="TaskListFragment" >
+        <action
+            android:id="@+id/action_taskListFragment_to_authentificationFragment"
+            app:destination="@id/authentificationFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginFragment"
@@ -22,12 +39,4 @@
             android:id="@+id/action_loginFragment_to_taskListFragment"
             app:destination="@id/taskListFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/signUpFragment"
-        android:name="com.hema.todo.user.SignUpFragment"
-        android:label="SignUpFragment" />
-    <fragment
-        android:id="@+id/taskListFragment"
-        android:name="com.hema.todo.tasklist.TaskListFragment"
-        android:label="TaskListFragment" />
 </navigation>

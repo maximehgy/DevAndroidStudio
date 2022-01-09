@@ -2,8 +2,6 @@ package com.hema.todo.user
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.hema.todo.network.TasksRepository
-import com.hema.todo.tasklist.Task
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,9 +11,12 @@ import okhttp3.MultipartBody
 class UserInfoViewModel : ViewModel(){
     private val repository = UserInfoRepository()
 
-    private val _userInfo = MutableStateFlow<UserInfo?>(null)
-    public val userInfo: StateFlow<UserInfo?> = _userInfo.asStateFlow()
-    var loginResponse : LoginResponse? = null
+    val _userInfo = MutableStateFlow<UserInfo?>(null)
+    var userInfo: StateFlow<UserInfo?> = _userInfo.asStateFlow()
+    private val _LoginResponse = MutableStateFlow<LoginResponse?>(null)
+    var LoginResponse = _LoginResponse.asStateFlow()
+
+
 
     fun refresh() {
         viewModelScope.launch {
@@ -46,7 +47,18 @@ class UserInfoViewModel : ViewModel(){
         viewModelScope.launch{
             val loginResult = repository.login(user)
             if (loginResult != null){
-                loginResponse = loginResult
+                _LoginResponse.value = loginResult
+                LoginResponse = _LoginResponse
+            }
+        }
+    }
+
+    fun signup(user : SignupForm){
+        viewModelScope.launch{
+            val signupResult = repository.signup(user)
+            if (signupResult != null){
+                _LoginResponse.value = signupResult
+                LoginResponse = _LoginResponse
             }
         }
     }

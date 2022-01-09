@@ -1,14 +1,11 @@
 package com.hema.todo.tasklist
 
-import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.hema.todo.databinding.ItemTaskBinding
-import com.hema.todo.form.FormActivity
 
 object TasksDiffCallback : DiffUtil.ItemCallback<Task>() {
         override fun areItemsTheSame(oldItem: Task, newItem: Task) =  oldItem.id == newItem.id

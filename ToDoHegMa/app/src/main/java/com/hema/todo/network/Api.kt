@@ -1,5 +1,8 @@
 package com.hema.todo.network
 
+import android.content.Context
+import androidx.preference.PreferenceManager
+import com.hema.todo.user.SHARED_PREF_TOKEN_KEY
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -9,7 +12,12 @@ import retrofit2.Retrofit
 object Api {
     // constantes qui serviront à faire les requêtes
     private const val BASE_URL = "https://android-tasks-api.herokuapp.com/api/"
-    private const val TOKEN = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjo1OTEsImV4cCI6MTY3Mjc0MTQ0NX0.InRuSyxG3xJlPWMhy5vor25PVLu9gzFQpYKrmWXYV0A"
+
+    lateinit var appContext: Context
+
+    fun setUpContext(context: Context) {
+        appContext = context
+    }
 
     // client HTTP
     private val okHttpClient by lazy {
@@ -17,7 +25,9 @@ object Api {
             .addInterceptor { chain ->
                 // intercepteur qui ajoute le `header` d'authentification avec votre token:
                 val newRequest = chain.request().newBuilder()
-                    .addHeader("Authorization", "Bearer $TOKEN")
+                    .addHeader("Authorization", "Bearer ${PreferenceManager.getDefaultSharedPreferences(
+                        appContext
+                    ).getString(SHARED_PREF_TOKEN_KEY, "")}")
                     .build()
                 chain.proceed(newRequest)
             }

@@ -6,7 +6,6 @@ import com.hema.todo.network.TasksRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import java.util.stream.IntStream.range
 
 class TaskListViewModel: ViewModel() {
     private val repository = TasksRepository()
@@ -27,6 +26,7 @@ class TaskListViewModel: ViewModel() {
             if (repository.delete(task)){
                 _taskList.value.toMutableList().remove(task)
             }
+            refresh()
         }
     }
 
@@ -36,6 +36,7 @@ class TaskListViewModel: ViewModel() {
             if (task!= null){
                 _taskList.value.toMutableList().add(task)
             }
+            refresh()
         }
     }
     fun edit(task : Task){
@@ -46,6 +47,7 @@ class TaskListViewModel: ViewModel() {
                 val pos = list.indexOfFirst { it.id == task.id }
                 list.set(pos, task)
             }
+            refresh()
         }
     }
 }

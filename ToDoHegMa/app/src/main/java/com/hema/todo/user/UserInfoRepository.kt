@@ -1,7 +1,6 @@
 package com.hema.todo.user
 
 import com.hema.todo.network.Api
-import com.hema.todo.tasklist.Task
 import okhttp3.MultipartBody
 
 class UserInfoRepository {
@@ -25,5 +24,10 @@ class UserInfoRepository {
     suspend fun login(user: LoginForm) : LoginResponse ?{
         val loginResponse = UserWebService.login(user)
         return if(loginResponse.isSuccessful) loginResponse.body() else null
+    }
+
+    suspend fun signup(user : SignupForm) : LoginResponse ?{
+        val loginResponse = UserWebService.signup(user)
+        return if (loginResponse.isSuccessful) loginResponse.body() else null
     }
 }

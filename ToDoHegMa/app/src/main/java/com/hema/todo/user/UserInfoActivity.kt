@@ -3,35 +3,22 @@ package com.hema.todo.user
 import android.Manifest
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.media.audiofx.BassBoost
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.os.Debug
 import android.provider.Settings
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.result.launch
 import androidx.appcompat.app.AlertDialog
-import androidx.core.net.toUri
 import androidx.lifecycle.lifecycleScope
 import coil.load
 import com.google.android.material.snackbar.Snackbar
 import com.google.modernstorage.mediastore.FileType
 import com.google.modernstorage.mediastore.MediaStoreRepository
 import com.google.modernstorage.mediastore.SharedPrimary
-import com.hema.todo.R
-import com.hema.todo.databinding.ActivityFormBinding
 import com.hema.todo.databinding.ActivityUserInfoBinding
-import com.hema.todo.databinding.FragmentTaskListBinding
-import com.hema.todo.network.Api.userWebService
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
-import java.io.File
 import java.util.*
 
 class UserInfoActivity : AppCompatActivity() {
@@ -53,11 +40,11 @@ class UserInfoActivity : AppCompatActivity() {
             gallerylauncher.launch("image/*")
         }
         lifecycleScope.launch {
-            val userInfo = viewModel.userInfo.collect { userInfo ->
+            viewModel.userInfo.collect { userInfo ->
                 if (userInfo != null) {
                     if (userInfo.avatar != null) {
                         binding.imageView.load(userInfo.avatar)
-                    } else error(R.drawable.ic_launcher_background)
+                    } else binding.imageView.load("https://goo.gl/gEgYUd")
                 }
             }
         }
